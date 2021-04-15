@@ -13,6 +13,7 @@ import styleConstructor from './style';
 import CalendarHeader from './header';
 import BasicDay from './day/basic';
 import Day from './day/index';
+import {getLunarDate} from './day/lunarCalendar';
 
 //Fallback for react-native-web or when RN version is < 0.44
 const {View, ViewPropTypes} = ReactNative;
@@ -70,7 +71,9 @@ class Calendar extends Component {
     /** Style passed to the header */
     headerStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]),
     /** Allow rendering of a totally custom header */
-    customHeader: PropTypes.any
+    customHeader: PropTypes.any,
+    /** Allow lunar date */
+    allowLunarDate: PropTypes.bool
   };
 
   static defaultProps = {
@@ -88,7 +91,7 @@ class Calendar extends Component {
 
     this.shouldComponentUpdate = shouldComponentUpdate;
   }
-  
+
   addMonth = count => {
     this.updateMonth(this.state.currentMonth.clone().addMonths(count, true));
   };
@@ -214,10 +217,17 @@ class Calendar extends Component {
 
   renderDay(day, id) {
     const {hideExtraDays} = this.props;
+    let lunarDay;
     const dayProps = extractComponentProps(Day, this.props);
 
     if (!dateutils.sameMonth(day, this.state.currentMonth) && hideExtraDays) {
       return <View key={id} style={this.style.emptyDayContainer} />;
+    }
+
+    const dayObj = new Date(day);
+
+    if (this.props.allowLunarDate) {
+      lunarDay = getLunarDate(dayObj.getDate(), dayObj.getMonth() + 1, dayObj.getFullYear());
     }
 
     return (
@@ -225,6 +235,7 @@ class Calendar extends Component {
         <Day
           {...dayProps}
           day={day}
+          lunarDay={lunarDay}
           state={this.getState(day)}
           marking={this.getDateMarking(day)}
           onPress={this.pressDay}

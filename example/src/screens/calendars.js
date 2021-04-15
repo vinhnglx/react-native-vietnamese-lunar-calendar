@@ -10,7 +10,6 @@ const CalendarsScreen = () => {
   const [selected, setSelected] = useState('');
   const [showMarkedDatesExamples, setShowMarkedDatesExamples] = useState(false);
 
-
   const toggleSwitch = () => {
     setShowMarkedDatesExamples(!showMarkedDatesExamples);
   };
@@ -30,6 +29,28 @@ const CalendarsScreen = () => {
       }
     }
     return disabledDates;
+  };
+
+  const renderCalendarWithLunarDate = () => {
+    return (
+      <Fragment>
+        <Text style={styles.text}>Calendar with lunar date</Text>
+        <Calendar
+          testID={testIDs.calendars.FIRST}
+          allowLunarDate
+          style={styles.calendar}
+          onDayPress={onDayPress}
+          markedDates={{
+            [selected]: {
+              selected: true,
+              disableTouchEvent: true,
+              selectedColor: 'orange',
+              selectedTextColor: 'red'
+            }
+          }}
+        />
+      </Fragment>
+    );
   };
 
   const renderCalendarWithSelectableDate = () => {
@@ -431,6 +452,7 @@ const CalendarsScreen = () => {
   const renderExamples = () => {
     return (
       <Fragment>
+        {renderCalendarWithLunarDate()}
         {renderCalendarWithSelectableDate()}
         {renderCalendarWithWeekNumbers()}
         {renderCalendarWithMinAndMaxDates()}
@@ -440,7 +462,8 @@ const CalendarsScreen = () => {
     );
   };
 
-  const renderSwitch = () => { // Workaround for Detox 18 migration bug
+  const renderSwitch = () => {
+    // Workaround for Detox 18 migration bug
     return (
       <View style={{flexDirection: 'row', margin: 10, alignItems: 'center'}}>
         <Switch

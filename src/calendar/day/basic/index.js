@@ -6,7 +6,6 @@ import {shouldUpdate} from '../../../component-updater';
 import styleConstructor from './style';
 import Marking from '../marking';
 
-
 export default class BasicDay extends Component {
   static displayName = 'IGNORE';
 
@@ -24,27 +23,37 @@ export default class BasicDay extends Component {
     onLongPress: PropTypes.func,
     /** The date to return from press callbacks */
     date: PropTypes.object,
+    /* Lunar day */
+    lunarDay: PropTypes.object,
     /** Disable all touch events for disabled days. can be override with disableTouchEvent in markedDates*/
     disableAllTouchEventsForDisabledDays: PropTypes.bool
   };
 
   constructor(props) {
     super(props);
-    
+
     this.style = styleConstructor(props.theme);
   }
 
   shouldComponentUpdate(nextProps) {
-    return shouldUpdate(this.props, nextProps, ['children', 'state', 'markingType', 'marking', 'onPress', 'onLongPress', 'date']);
+    return shouldUpdate(this.props, nextProps, [
+      'children',
+      'state',
+      'markingType',
+      'marking',
+      'onPress',
+      'onLongPress',
+      'date'
+    ]);
   }
 
   onPress = () => {
     _.invoke(this.props, 'onPress', this.props.date);
-  }
-  
+  };
+
   onLongPress = () => {
     _.invoke(this.props, 'onLongPress', this.props.date);
-  }
+  };
 
   get marking() {
     let marking = this.props.marking || {};
@@ -101,7 +110,7 @@ export default class BasicDay extends Component {
     } else if (this.isToday()) {
       style.push(this.style.today);
     }
-    
+
     //Custom marking type
     if (this.isCustom() && customStyles && customStyles.container) {
       if (customStyles.container.borderRadius === undefined) {
@@ -156,10 +165,30 @@ export default class BasicDay extends Component {
   }
 
   renderText() {
+    const {lunarDay} = this.props;
+
+    let lunar;
+
+    const solarDate = new Date().getDate();
+
+    if (lunarDay) {
+      if (solarDate === 1 || lunarDay.day === 1) {
+        lunar = lunarDay.day + '/' + lunarDay.month;
+      } else {
+        lunar = lunarDay.day;
+      }
+    }
+
     return (
-      <Text allowFontScaling={false} style={this.getTextStyle()}>
-        {String(this.props.children)}
-      </Text>
+      <>
+        <Text allowFontScaling={false} style={[this.getTextStyle(), {textAlign: 'center'}]}>
+          {String(this.props.children)}
+        </Text>
+
+        {lunarDay && (
+          <Text style={[this.getTextStyle(), {textAlign: 'right', marginTop: 6, fontSize: 10}]}>{lunar}</Text>
+        )}
+      </>
     );
   }
 
@@ -178,7 +207,7 @@ export default class BasicDay extends Component {
     return (
       <TouchableOpacity
         testID={this.props.testID}
-        style={this.getContainerStyle()}
+        style={[this.getContainerStyle()]}
         disabled={this.shouldDisableTouchEvent()}
         activeOpacity={activeOpacity}
         onPress={!this.shouldDisableTouchEvent() ? this.onPress : undefined}

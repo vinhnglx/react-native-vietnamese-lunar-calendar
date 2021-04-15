@@ -8,7 +8,6 @@ import {SELECT_DATE_SLOT} from '../../testIDs';
 import BasicDay from './basic';
 import PeriodDay from './period';
 
-
 const basicDayProps = _.omit(BasicDay.propTypes, 'date');
 
 export default class Day extends Component {
@@ -18,12 +17,21 @@ export default class Day extends Component {
     ...basicDayProps,
     /** The day to render */
     day: PropTypes.object,
+    /* Lunar day */
+    lunarDay: PropTypes.object,
     /** Provide custom day rendering component */
     dayComponent: PropTypes.any
   };
 
   shouldComponentUpdate(nextProps) {
-    return shouldUpdate(this.props, nextProps, ['day', 'dayComponent', 'markingType', 'marking', 'onPress', 'onLongPress']);
+    return shouldUpdate(this.props, nextProps, [
+      'day',
+      'dayComponent',
+      'markingType',
+      'marking',
+      'onPress',
+      'onLongPress'
+    ]);
   }
 
   getMarkingLabel() {
@@ -55,7 +63,7 @@ export default class Day extends Component {
     return label;
   }
 
-  getAccessibilityLabel = (day) => {
+  getAccessibilityLabel = day => {
     const {state} = this.props;
     const today = XDate.locales[XDate.defaultLocale].today;
     const isToday = state === 'today'; //TODO: check if 'day' equals 'today' and remove 'state' check
@@ -79,19 +87,20 @@ export default class Day extends Component {
   }
 
   render() {
-    const {day} = this.props;
+    const {day, lunarDay} = this.props;
     const date = xdateToData(day);
     const Component = this.getDayComponent();
     const dayProps = extractComponentProps(Component, this.props);
 
     return (
       <Component
-          {...dayProps}
-          date={date}
-          testID={`${SELECT_DATE_SLOT}-${date.dateString}`}
-          accessibilityLabel={this.getAccessibilityLabel(day)}
-        >
-          {date ? day.getDate() : day}
+        {...dayProps}
+        date={date}
+        lunarDay={lunarDay}
+        testID={`${SELECT_DATE_SLOT}-${date.dateString}`}
+        accessibilityLabel={this.getAccessibilityLabel(day)}
+      >
+        {date ? day.getDate() : day}
       </Component>
     );
   }
