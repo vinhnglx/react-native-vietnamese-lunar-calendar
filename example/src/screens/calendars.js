@@ -2,7 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import React, {useState, Fragment} from 'react';
 import {StyleSheet, View, ScrollView, Text, TouchableOpacity, Switch} from 'react-native';
-import {Calendar} from 'react-native-calendars';
+import {Calendar} from 'react-native-vietnamese-lunar-calendars';
 
 const testIDs = require('../testIDs');
 
