@@ -186,7 +186,7 @@ export default class BasicDay extends Component {
         </Text>
 
         {lunarDay && (
-          <Text style={[this.getTextStyle(), {textAlign: 'right', marginTop: 6, fontSize: 10}]}>{lunar}</Text>
+          <Text style={[this.getTextStyle(), {textAlign: 'right', marginTop: 4, fontSize: 10}]}>{lunar}</Text>
         )}
       </>
     );
